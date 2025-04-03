@@ -9,12 +9,18 @@ RUN apk add --no-cache \
     python3 \
     py3-pip \
     yara \
-    git \
-    && pip3 install --no-cache-dir yara-python requests
+    git
+# Create virtual environment
+RUN python3 -m venv /venv && \
+    . /venv/bin/activate && \
+    pip install --no-cache-dir flask yara-python requests
+
+# Add virtualenv binaries to PATH
+ENV PATH="/venv/bin:$PATH"
 
 # Copy the optimized scripts and YARA rules
-COPY optimized_yara_scan.py /app/yara_scan.py
-COPY optimized_report_normalizer.py /app/report_normalizer.py
+COPY scan.py /app/yara_scan.py
+COPY ReportNormalizer.py /app/report_normalizer.py
 COPY yara_rules/ /app/yara_rules/
 
 # Set environment variables for directories
